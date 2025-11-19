@@ -1,4 +1,6 @@
-import React, { useState, useCallback } from 'react';
+
+
+import React, { useState } from 'react';
 import { AppConfig, WindowState } from './types';
 import { WALLPAPERS, INITIAL_WINDOW_POS, AppID } from './constants';
 import { MenuBar } from './components/os/MenuBar';
@@ -11,27 +13,11 @@ import { SettingsApp } from './apps/SettingsApp';
 import { CalculatorApp } from './apps/CalculatorApp';
 import { ClockApp } from './apps/ClockApp';
 import { Folder, Terminal, Sparkles, Settings, Globe, Calculator, Clock } from 'lucide-react';
-import { AnimatePresence } from 'framer-motion';
 
 const App: React.FC = () => {
   const [wallpaper, setWallpaper] = useState(WALLPAPERS.sequoia);
   const [activeAppTitle, setActiveAppTitle] = useState<string>('Finder');
   
-  // Track dock icon positions for the genie effect
-  const [dockItemPositions, setDockItemPositions] = useState<Record<string, DOMRect>>({});
-  
-  const handleDockLayout = useCallback((appId: string, rect: DOMRect) => {
-    setDockItemPositions(prev => {
-        // Only update if changed to prevent infinite loops
-        if (prev[appId] && 
-            prev[appId].x === rect.x && 
-            prev[appId].y === rect.y) {
-            return prev;
-        }
-        return { ...prev, [appId]: rect };
-    });
-  }, []);
-
   // List of available apps
   const APPS: AppConfig[] = [
     { 
@@ -131,8 +117,8 @@ const App: React.FC = () => {
       isMinimized: false,
       isMaximized: false,
       position: { 
-          x: Math.max(20, INITIAL_WINDOW_POS.x + (windows.length * 30)), 
-          y: Math.max(40, INITIAL_WINDOW_POS.y + (windows.length * 30)) 
+          x: INITIAL_WINDOW_POS.x + (windows.length * 30), 
+          y: INITIAL_WINDOW_POS.y + (windows.length * 30) 
       },
       size: { width: app.defaultWidth, height: app.defaultHeight },
       zIndex: nextZIndex,
@@ -151,7 +137,7 @@ const App: React.FC = () => {
 
   const minimizeWindow = (id: string) => {
     setWindows(prev => prev.map(w => w.id === id ? { ...w, isMinimized: true } : w));
-    setActiveAppTitle('Finder'); 
+    setActiveAppTitle('Finder'); // Switch focus to Finder when minimizing (simplification)
   };
 
   const maximizeWindow = (id: string) => {
@@ -177,35 +163,31 @@ const App: React.FC = () => {
         className="h-screen w-screen overflow-hidden bg-cover bg-center relative transition-all duration-500"
         style={{ backgroundImage: `url(${wallpaper})` }}
     >
-      {/* Desktop Layer */}
-      <div className="absolute inset-0 z-0" onClick={() => setActiveAppTitle('Finder')}>
-      </div>
+      {/* Desktop Layer (Clicking background resets focus to Finder roughly) */}
+      <div className="absolute inset-0 z-0" onClick={() => setActiveAppTitle('Finder')} />
 
       <MenuBar activeAppTitle={activeAppTitle} />
 
       {/* Windows Layer */}
       <div className="relative w-full h-full pointer-events-none">
-        <AnimatePresence>
-            {windows.map(window => (
+        {windows.map(window => (
+            <div key={window.id} className="pointer-events-auto">
                 <WindowFrame
-                    key={window.id}
                     windowState={window}
                     onClose={closeWindow}
                     onMinimize={minimizeWindow}
                     onMaximize={maximizeWindow}
                     onFocus={focusWindow}
                     onMove={moveWindow}
-                    launchOrigin={dockItemPositions[window.appId]}
                 />
-            ))}
-        </AnimatePresence>
+            </div>
+        ))}
       </div>
 
       <Dock 
         apps={APPS} 
         openAppIds={windows.map(w => w.appId)}
         onAppClick={openApp}
-        onLayout={handleDockLayout}
       />
     </div>
   );
