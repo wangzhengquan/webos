@@ -16,28 +16,32 @@ export const useWindowDrag = (
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState<Point>({ x: 0, y: 0 });
 
+  // Sync internal state if external prop changes (e.g. restore from maximize)
+  // But DO NOT sync while dragging to avoid state loops
   useEffect(() => {
-    // Sync internal state if external prop changes (e.g. restore from maximize)
-    if (!options.isMaximized) {
+    if (!isDragging && !options.isMaximized) {
        setPosition(options.initialPosition);
     }
-  }, [options.initialPosition, options.isMaximized]);
+  }, [options.initialPosition, options.isMaximized, isDragging]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent | MouseEvent) => {
     if (options.isMaximized || !ref.current) return;
     
-    // Only start drag if clicking the handle
+    // Check if click is within handle if handleRef is provided
+    // Note: We use contains to allow children of the handle (like text) to trigger drag
     if (handleRef.current && !handleRef.current.contains(e.target as Node)) {
       return;
     }
 
-    const rect = ref.current.getBoundingClientRect();
+    // Use logical position from state instead of visual position from DOM
+    // This prevents jumps caused by CSS transforms (like scaling animations)
+    // or mismatches between visual and logical coordinates.
     setOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+      x: e.clientX - position.x,
+      y: e.clientY - position.y,
     });
     setIsDragging(true);
-  }, [options.isMaximized, ref, handleRef]);
+  }, [options.isMaximized, ref, handleRef, position]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging) return;
@@ -47,6 +51,8 @@ export const useWindowDrag = (
 
     const nextPos = { x: newX, y: newY };
     setPosition(nextPos);
+    
+    // Sync with parent state (can be debounced in production for perf)
     if (options.onPositionChange) {
       options.onPositionChange(nextPos);
     }
@@ -70,5 +76,6 @@ export const useWindowDrag = (
     };
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
-  return { position, isDragging };
+  // Return onMouseDown so it can be attached to the element
+  return { position, isDragging, onMouseDown: handleMouseDown };
 };

@@ -1,3 +1,5 @@
+
+
 import React, { useState } from 'react';
 import { AppConfig, WindowState } from './types';
 import { WALLPAPERS, INITIAL_WINDOW_POS, AppID } from './constants';
@@ -8,10 +10,12 @@ import { FinderApp } from './apps/FinderApp';
 import { TerminalApp } from './apps/TerminalApp';
 import { GeminiApp } from './apps/GeminiApp';
 import { SettingsApp } from './apps/SettingsApp';
-import { Folder, Terminal, Sparkles, Settings, Globe } from 'lucide-react';
+import { CalculatorApp } from './apps/CalculatorApp';
+import { ClockApp } from './apps/ClockApp';
+import { Folder, Terminal, Sparkles, Settings, Globe, Calculator, Clock } from 'lucide-react';
 
 const App: React.FC = () => {
-  const [wallpaper, setWallpaper] = useState(WALLPAPERS.monterey);
+  const [wallpaper, setWallpaper] = useState(WALLPAPERS.sequoia);
   const [activeAppTitle, setActiveAppTitle] = useState<string>('Finder');
   
   // List of available apps
@@ -42,6 +46,24 @@ const App: React.FC = () => {
         defaultWidth: 400,
         defaultHeight: 600,
         component: GeminiApp 
+    },
+    { 
+        id: AppID.CALCULATOR, 
+        title: 'Calculator', 
+        icon: Calculator, 
+        color: 'bg-gray-700',
+        defaultWidth: 320,
+        defaultHeight: 480,
+        component: CalculatorApp 
+    },
+    { 
+        id: AppID.CLOCK, 
+        title: 'Clock', 
+        icon: Clock, 
+        color: 'bg-white',
+        defaultWidth: 350,
+        defaultHeight: 450,
+        component: ClockApp 
     },
     { 
         id: AppID.SETTINGS, 
@@ -138,28 +160,11 @@ const App: React.FC = () => {
 
   return (
     <div 
-        className="h-screen w-screen overflow-hidden bg-cover bg-center relative"
+        className="h-screen w-screen overflow-hidden bg-cover bg-center relative transition-all duration-500"
         style={{ backgroundImage: `url(${wallpaper})` }}
     >
       {/* Desktop Layer (Clicking background resets focus to Finder roughly) */}
-      <div className="absolute inset-0 z-0" onClick={() => setActiveAppTitle('Finder')}>
-        {/* Desktop Icons */}
-        <div className="absolute top-10 right-4 flex flex-col items-end gap-6 p-2">
-            <div className="group w-24 flex flex-col items-center gap-1 cursor-pointer" title="Double click to open (Mock)">
-                <div className="w-[72px] h-[72px] p-1 bg-white/20 backdrop-blur-sm rounded-lg border border-white/20 shadow-sm flex items-center justify-center transition-colors group-hover:bg-white/40">
-                   <img 
-                     src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?q=80&w=200&auto=format&fit=crop" 
-                     alt="Cute Cat"
-                     className="w-full h-full object-cover rounded"
-                     draggable={false}
-                   />
-                </div>
-                <span className="text-white text-xs font-medium drop-shadow-md shadow-black px-2 py-0.5 rounded group-hover:bg-[#0061D6] group-hover:text-white transition-colors text-center line-clamp-2 break-words w-full">
-                    Cat_Photo.jpg
-                </span>
-            </div>
-        </div>
-      </div>
+      <div className="absolute inset-0 z-0" onClick={() => setActiveAppTitle('Finder')} />
 
       <MenuBar activeAppTitle={activeAppTitle} />
 
