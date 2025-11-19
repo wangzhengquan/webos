@@ -12,7 +12,7 @@ import { Folder, Terminal, Sparkles, Settings, Globe } from 'lucide-react';
 
 const App: React.FC = () => {
   const [wallpaper, setWallpaper] = useState(WALLPAPERS.monterey);
-  const [activeAppId, setActiveAppId] = useState<string>('Finder');
+  const [activeAppTitle, setActiveAppTitle] = useState<string>('Finder');
   
   // List of available apps
   const APPS: AppConfig[] = [
@@ -78,6 +78,7 @@ const App: React.FC = () => {
             w.id === existingWindow.id ? { ...w, isMinimized: false, zIndex: nextZIndex } : w
         ));
         setNextZIndex(n => n + 1);
+        setActiveAppTitle(existingWindow.title);
       } else {
         // Just bring to front
         focusWindow(existingWindow.id);
@@ -104,16 +105,17 @@ const App: React.FC = () => {
 
     setWindows([...windows, newWindow]);
     setNextZIndex(n => n + 1);
-    setActiveAppId(app.title);
+    setActiveAppTitle(app.title);
   };
 
   const closeWindow = (id: string) => {
     setWindows(prev => prev.filter(w => w.id !== id));
-    setActiveAppId('Finder');
+    setActiveAppTitle('Finder');
   };
 
   const minimizeWindow = (id: string) => {
     setWindows(prev => prev.map(w => w.id === id ? { ...w, isMinimized: true } : w));
+    setActiveAppTitle('Finder'); // Switch focus to Finder when minimizing (simplification)
   };
 
   const maximizeWindow = (id: string) => {
@@ -126,7 +128,7 @@ const App: React.FC = () => {
     if (win) {
         setWindows(prev => prev.map(w => w.id === id ? { ...w, zIndex: nextZIndex } : w));
         setNextZIndex(n => n + 1);
-        setActiveAppId(win.title);
+        setActiveAppTitle(win.title);
     }
   };
 
@@ -140,9 +142,9 @@ const App: React.FC = () => {
         style={{ backgroundImage: `url(${wallpaper})` }}
     >
       {/* Desktop Layer (Clicking background resets focus to Finder roughly) */}
-      <div className="absolute inset-0" onClick={() => setActiveAppId('Finder')} />
+      <div className="absolute inset-0" onClick={() => setActiveAppTitle('Finder')} />
 
-      <MenuBar activeAppTitle={activeAppId} />
+      <MenuBar activeAppTitle={activeAppTitle} />
 
       {/* Windows Layer */}
       <div className="relative w-full h-full pointer-events-none">
