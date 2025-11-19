@@ -12,9 +12,9 @@ export const Dock: React.FC<DockProps> = ({ apps, openAppIds, onAppClick }) => {
   const mouseX = useMotionValue<number | null>(null);
 
   return (
-    <div className="fixed bottom-6 left-0 right-0 flex justify-center z-50 pointer-events-none">
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex justify-center">
       <div 
-        className="pointer-events-auto flex items-end justify-center h-20 gap-4 px-4 pb-3 bg-white/20 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl"
+        className="flex items-end h-16 gap-3 px-3 pb-3 bg-white/20 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl"
         onMouseLeave={() => mouseX.set(null)}
         onMouseMove={(e) => mouseX.set(e.pageX)}
       >
@@ -47,31 +47,31 @@ const DockIcon: React.FC<DockIconProps> = ({ app, mouseX, isOpen, onClick }) => 
     return val ? val - bounds.x - bounds.width / 2 : Infinity;
   });
 
-  // Adjusted scaling for a more natural feel
-  const widthSync = useTransform(distance, [-150, 0, 150], [50, 90, 50]);
+  const widthSync = useTransform(distance, [-150, 0, 150], [48, 85, 48]);
   const width = useSpring(widthSync, { mass: 0.1, stiffness: 150, damping: 12 });
 
   const Icon = app.icon;
 
   return (
-    <div className="flex flex-col items-center gap-1.5">
+    <div className="flex flex-col items-center gap-1">
       <motion.div
         ref={ref}
         style={{ width, height: width }}
         onClick={onClick}
-        className="relative rounded-2xl flex items-center justify-center shadow-lg cursor-pointer hover:brightness-110 transition-all origin-bottom"
+        className={`relative rounded-2xl flex items-center justify-center shadow-lg cursor-pointer hover:brightness-110 transition-all`}
+        initial={{ y: 0 }}
+        whileHover={{ y: -8 }}
+        whileTap={{ y: 0 }}
       >
           {/* App Icon Background */}
           <div className={`absolute inset-0 rounded-2xl ${app.color} opacity-90 shadow-inner`} />
           
-          {/* Icon SVG - Centered */}
-          <div className="relative z-10 text-white w-full h-full flex items-center justify-center drop-shadow-md">
-              <Icon size="50%" strokeWidth={2} />
+          {/* Icon SVG - Explicitly centered */}
+          <div className="relative z-10 text-white w-full h-full flex items-center justify-center drop-shadow-sm">
+              <Icon size="55%" strokeWidth={1.5} />
           </div>
       </motion.div>
-      
-      {/* Open Indicator */}
-      <div className={`w-1.5 h-1.5 rounded-full bg-gray-800/80 ${isOpen ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`} />
+      <div className={`w-1 h-1 rounded-full bg-black/80 ${isOpen ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`} />
     </div>
   );
 };
