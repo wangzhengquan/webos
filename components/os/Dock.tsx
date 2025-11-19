@@ -12,9 +12,9 @@ export const Dock: React.FC<DockProps> = ({ apps, openAppIds, onAppClick }) => {
   const mouseX = useMotionValue<number | null>(null);
 
   return (
-    <div className="fixed bottom-2 left-1/2 -translate-x-1/2 z-50">
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex justify-center">
       <div 
-        className="flex items-end h-16 gap-2 px-4 pb-2 bg-white/20 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl"
+        className="flex items-end h-16 gap-3 px-3 pb-3 bg-white/20 backdrop-blur-2xl border border-white/20 rounded-2xl shadow-2xl"
         onMouseLeave={() => mouseX.set(null)}
         onMouseMove={(e) => mouseX.set(e.pageX)}
       >
@@ -47,7 +47,7 @@ const DockIcon: React.FC<DockIconProps> = ({ app, mouseX, isOpen, onClick }) => 
     return val ? val - bounds.x - bounds.width / 2 : Infinity;
   });
 
-  const widthSync = useTransform(distance, [-150, 0, 150], [48, 90, 48]);
+  const widthSync = useTransform(distance, [-150, 0, 150], [48, 85, 48]);
   const width = useSpring(widthSync, { mass: 0.1, stiffness: 150, damping: 12 });
 
   const Icon = app.icon;
@@ -58,20 +58,20 @@ const DockIcon: React.FC<DockIconProps> = ({ app, mouseX, isOpen, onClick }) => 
         ref={ref}
         style={{ width, height: width }}
         onClick={onClick}
-        className={`relative rounded-xl flex items-center justify-center shadow-lg cursor-pointer hover:brightness-110 transition-all active:brightness-90`}
-        // Fallback background if no gradient is defined in app
+        className={`relative rounded-2xl flex items-center justify-center shadow-lg cursor-pointer hover:brightness-110 transition-all`}
         initial={{ y: 0 }}
-        whileTap={{ y: 5 }}
+        whileHover={{ y: -8 }}
+        whileTap={{ y: 0 }}
       >
           {/* App Icon Background */}
-          <div className={`absolute inset-0 rounded-xl ${app.color} opacity-90`} />
+          <div className={`absolute inset-0 rounded-2xl ${app.color} opacity-90 shadow-inner`} />
           
-          {/* Icon SVG */}
-          <div className="relative z-10 text-white">
-              <Icon size="60%" strokeWidth={1.5} />
+          {/* Icon SVG - Explicitly centered */}
+          <div className="relative z-10 text-white w-full h-full flex items-center justify-center drop-shadow-sm">
+              <Icon size="55%" strokeWidth={1.5} />
           </div>
       </motion.div>
-      <div className={`w-1 h-1 rounded-full bg-black/60 ${isOpen ? 'opacity-100' : 'opacity-0'}`} />
+      <div className={`w-1 h-1 rounded-full bg-black/80 ${isOpen ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`} />
     </div>
   );
 };
