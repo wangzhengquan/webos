@@ -142,7 +142,24 @@ const App: React.FC = () => {
         style={{ backgroundImage: `url(${wallpaper})` }}
     >
       {/* Desktop Layer (Clicking background resets focus to Finder roughly) */}
-      <div className="absolute inset-0" onClick={() => setActiveAppTitle('Finder')} />
+      <div className="absolute inset-0 z-0" onClick={() => setActiveAppTitle('Finder')}>
+        {/* Desktop Icons */}
+        <div className="absolute top-10 right-4 flex flex-col items-end gap-6 p-2">
+            <div className="group w-24 flex flex-col items-center gap-1 cursor-pointer" title="Double click to open (Mock)">
+                <div className="w-[72px] h-[72px] p-1 bg-white/20 backdrop-blur-sm rounded-lg border border-white/20 shadow-sm flex items-center justify-center transition-colors group-hover:bg-white/40">
+                   <img 
+                     src="https://images.unsplash.com/photo-1533738363-b7f9aef128ce?q=80&w=200&auto=format&fit=crop" 
+                     alt="Cute Cat"
+                     className="w-full h-full object-cover rounded"
+                     draggable={false}
+                   />
+                </div>
+                <span className="text-white text-xs font-medium drop-shadow-md shadow-black px-2 py-0.5 rounded group-hover:bg-[#0061D6] group-hover:text-white transition-colors text-center line-clamp-2 break-words w-full">
+                    Cat_Photo.jpg
+                </span>
+            </div>
+        </div>
+      </div>
 
       <MenuBar activeAppTitle={activeAppTitle} />
 
