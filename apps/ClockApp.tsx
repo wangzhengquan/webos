@@ -30,24 +30,26 @@ export const ClockApp: React.FC = () => {
                 />
             ))}
 
-            {/* Hour Hand */}
+            {/* Hour Hand - Pivot at bottom, placed at center */}
             <div 
-                className="absolute w-2 bg-black h-16 left-1/2 top-[46px] rounded-full origin-[50%_100%] -translate-x-1/2 shadow-sm"
-                style={{ transform: `translateX(-50%) rotate(${hourDeg}deg)` }}
+                className="absolute w-2 bg-black h-16 left-1/2 top-1/2 -translate-x-1/2 -translate-y-full origin-bottom shadow-sm rounded-full"
+                style={{ transform: `translate(-50%, -100%) rotate(${hourDeg}deg)` }}
             />
 
-            {/* Minute Hand */}
+            {/* Minute Hand - Pivot at bottom, placed at center */}
              <div 
-                className="absolute w-1.5 bg-black h-24 left-1/2 top-[14px] rounded-full origin-[50%_100%] -translate-x-1/2 shadow-sm"
-                style={{ transform: `translateX(-50%) rotate(${minuteDeg}deg)` }}
+                className="absolute w-1.5 bg-black h-24 left-1/2 top-1/2 -translate-x-1/2 -translate-y-full origin-bottom shadow-sm rounded-full"
+                style={{ transform: `translate(-50%, -100%) rotate(${minuteDeg}deg)` }}
             />
 
-            {/* Second Hand */}
+            {/* Second Hand - Pivot 100px from top (tail is the rest) */}
+            {/* Total height 130px. 100px up, 30px down. */}
             <div 
-                className="absolute w-0.5 bg-orange-500 h-28 left-1/2 top-[6px] origin-[50%_80%] -translate-x-1/2 z-10"
-                style={{ transform: `translateX(-50%) rotate(${secondDeg}deg)` }}
+                className="absolute w-0.5 bg-orange-500 h-[130px] left-1/2 top-1/2 -translate-x-1/2 -translate-y-[100px] origin-[50%_100px] z-10"
+                style={{ transform: `translate(-50%, -100px) rotate(${secondDeg}deg)` }}
             >
-                <div className="absolute w-2 h-2 bg-orange-500 rounded-full -top-1 left-1/2 -translate-x-1/2" />
+                {/* Decorative circle on the tail */}
+                <div className="absolute w-2 h-2 bg-orange-500 rounded-full top-[26px] left-1/2 -translate-x-1/2" />
             </div>
 
             {/* Center Cap */}
